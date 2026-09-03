@@ -1,0 +1,28 @@
+{
+    "experiment_id": "c9416ed37f58",
+    "config": {
+        "qec_code": "bit_flip_3",
+        "num_qubits": 3,
+        "logical_state": null,
+        "rounds": 5,
+        "physical_noise_probability": 0.2,
+        "measurement_noise_probability": 0.1,
+        "training_samples": 500,
+        "test_samples": 200,
+        "decoder_type": "logical_target_random_forest",
+        "random_forest_estimators": 20,
+        "seed": 300
+    },
+    "training_samples": 500,
+    "test_samples": 200,
+    "logical_targets_learned": 335,
+    "average_target_score": 0.9520398009950248,
+    "exact_accuracy": 0.12,
+    "physical_accuracy": 0.12,
+    "bit_accuracy": 0.53,
+    "logical_accuracy": 0.54,
+    "training_seconds": 0.20926269999472424,
+    "inference_seconds": 0.01875389998895116,
+    "samples_per_second": 10664.448467669647,
+    "decoder_type": "logical_target_random_forest"
+}

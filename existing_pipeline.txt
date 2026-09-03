@@ -1,0 +1,1327 @@
+﻿import random
+
+from syndrome.measurement_noise import (
+    SyndromeMeasurementNoise
+)
+
+
+class TimeVaryingQECDatasetGenerator:
+    """
+    Generate repeated-QEC samples with time-dependent
+    physical bit-flip errors.
+
+    Each sample now explicitly contains a logical state:
+
+        logical_state = 0
+            |0>L = |000>
+
+        logical_state = 1
+            |1>L = |111>
+
+    The physical X-error process is modeled independently
+    from the logical state.
+
+    This is still a controlled synthetic model rather
+    than a full round-by-round quantum-circuit QEC
+    implementation.
+    """
+
+    def __init__(
+        self,
+        rounds=5,
+        physical_error_probability=0.01,
+        measurement_noise_probability=0.10,
+        seed=None
+    ):
+        if rounds <= 0:
+            raise ValueError(
+                "rounds must be greater than 0"
+            )
+
+        if not 0.0 <= physical_error_probability <= 1.0:
+            raise ValueError(
+                "physical_error_probability "
+                "must be between 0 and 1"
+            )
+
+        if not 0.0 <= measurement_noise_probability <= 1.0:
+            raise ValueError(
+                "measurement_noise_probability "
+                "must be between 0 and 1"
+            )
+
+        self.rounds = rounds
+
+        self.physical_error_probability = (
+            physical_error_probability
+        )
+
+        self.measurement_noise_probability = (
+            measurement_noise_probability
+        )
+
+        self.random = random.Random(seed)
+
+        self.measurement_noise = (
+            SyndromeMeasurementNoise(
+                probability=(
+                    measurement_noise_probability
+                ),
+                seed=seed
+            )
+        )
+
+    def apply_physical_noise(
+        self,
+        error_state
+    ):
+        """
+        Independently apply a possible X error
+        to each physical qubit.
+
+        error_state:
+
+            [q0, q1, q2]
+
+        0 = even X-error parity
+        1 = odd X-error parity
+        """
+
+        if len(error_state) != 3:
+            raise ValueError(
+                "error_state must contain 3 qubits"
+            )
+
+        for qubit in range(3):
+
+            if (
+                self.random.random()
+                < self.physical_error_probability
+            ):
+                error_state[qubit] ^= 1
+
+        return error_state
+
+    def calculate_syndrome(
+        self,
+        error_state
+    ):
+        """
+        Calculate perfect syndrome.
+
+        S1 = q0 XOR q1
+        S2 = q1 XOR q2
+        """
+
+        if len(error_state) != 3:
+            raise ValueError(
+                "error_state must contain 3 qubits"
+            )
+
+        q0, q1, q2 = error_state
+
+        s1 = q0 ^ q1
+        s2 = q1 ^ q2
+
+        return f"{s1}{s2}"
+
+    def describe_error_state(
+        self,
+        error_state
+    ):
+        """
+        Convert accumulated physical error state
+        into a readable description.
+        """
+
+        active_qubits = [
+            index
+            for index, value
+            in enumerate(error_state)
+            if value == 1
+        ]
+
+        if len(active_qubits) == 0:
+            return "No accumulated X error"
+
+        return (
+            "Accumulated X errors on "
+            + ", ".join(
+                f"q{qubit}"
+                for qubit in active_qubits
+            )
+        )
+
+    def calculate_detection_events(
+        self,
+        syndrome_history
+    ):
+        """
+        Calculate syndrome-change events.
+        """
+
+        if len(syndrome_history) == 0:
+            raise ValueError(
+                "syndrome_history cannot be empty"
+            )
+
+        detection_events = []
+
+        previous_syndrome = "00"
+
+        for syndrome in syndrome_history:
+
+            if len(syndrome) != 2:
+                raise ValueError(
+                    "Each syndrome must contain 2 bits"
+                )
+
+            previous_bits = [
+                int(previous_syndrome[0]),
+                int(previous_syndrome[1])
+            ]
+
+            current_bits = [
+                int(syndrome[0]),
+                int(syndrome[1])
+            ]
+
+            event_s1 = (
+                previous_bits[0]
+                ^ current_bits[0]
+            )
+
+            event_s2 = (
+                previous_bits[1]
+                ^ current_bits[1]
+            )
+
+            detection_events.append(
+                f"{event_s1}{event_s2}"
+            )
+
+            previous_syndrome = syndrome
+
+        return detection_events
+
+    def generate_sample(
+        self,
+        sample_id
+    ):
+        """
+        Generate one time-dependent QEC sample.
+        """
+
+        # --------------------------------
+        # Logical state
+        # --------------------------------
+
+        logical_state = (
+            self.random.choice([0, 1])
+        )
+
+        if logical_state == 0:
+            encoded_state = "000"
+        else:
+            encoded_state = "111"
+
+        # --------------------------------
+        # Physical error state
+        # --------------------------------
+
+        error_state = [0, 0, 0]
+
+        syndrome_history = []
+        observed_syndrome_history = []
+        physical_error_history = []
+
+        for _ in range(self.rounds):
+
+            self.apply_physical_noise(
+                error_state
+            )
+
+            physical_error_history.append(
+                error_state.copy()
+            )
+
+            perfect_syndrome = (
+                self.calculate_syndrome(
+                    error_state
+                )
+            )
+
+            syndrome_history.append(
+                perfect_syndrome
+            )
+
+            observed_syndrome = (
+                self.measurement_noise.apply(
+                    perfect_syndrome
+                )
+            )
+
+            observed_syndrome_history.append(
+                observed_syndrome
+            )
+
+        detection_events = (
+            self.calculate_detection_events(
+                observed_syndrome_history
+            )
+        )
+
+        final_error_state = (
+            error_state.copy()
+        )
+
+        final_syndrome = (
+            syndrome_history[-1]
+        )
+
+        final_observed_syndrome = (
+            observed_syndrome_history[-1]
+        )
+
+        return {
+            "sample_id":
+                sample_id,
+
+            "qec_code":
+                "bit_flip_3",
+
+            "num_qubits":
+                3,
+
+            "rounds":
+                self.rounds,
+
+            "logical_state":
+                logical_state,
+
+            "encoded_state":
+                encoded_state,
+
+            "physical_error_probability":
+                self.physical_error_probability,
+
+            "measurement_noise_probability":
+                self.measurement_noise_probability,
+
+            "syndrome_history":
+                syndrome_history,
+
+            "observed_syndrome_history":
+                observed_syndrome_history,
+
+            "detection_events":
+                detection_events,
+
+            "physical_error_history":
+                physical_error_history,
+
+            "final_error_state":
+                final_error_state,
+
+            "final_syndrome":
+                final_syndrome,
+
+            "final_observed_syndrome":
+                final_observed_syndrome,
+
+            "final_error_description":
+                self.describe_error_state(
+                    final_error_state
+                )
+        }
+
+    def generate_dataset(
+        self,
+        num_samples
+    ):
+        if num_samples <= 0:
+            raise ValueError(
+                "num_samples must be greater than 0"
+            )
+
+        return [
+            self.generate_sample(
+                sample_id=i
+            )
+            for i in range(num_samples)
+        ]
+import numpy as np
+
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.ensemble import RandomForestClassifier
+
+from decoders.logical_target import LogicalTargetBuilder
+
+
+class LogicalTargetRandomForestDecoder:
+    """
+    Random Forest decoder trained to predict a
+    logical-preserving physical correction.
+
+    Input:
+        observed syndrome history
+        +
+        detection event history
+
+    Output:
+        3-bit correction pattern
+
+        [q0, q1, q2]
+    """
+
+    def __init__(
+        self,
+        rounds=5,
+        n_estimators=100,
+        random_seed=42
+    ):
+        if rounds <= 0:
+            raise ValueError(
+                "rounds must be greater than 0"
+            )
+
+        if n_estimators <= 0:
+            raise ValueError(
+                "n_estimators must be greater than 0"
+            )
+
+        self.rounds = rounds
+        self.n_estimators = n_estimators
+        self.random_seed = random_seed
+
+        self.target_builder = (
+            LogicalTargetBuilder()
+        )
+
+        base_model = RandomForestClassifier(
+            n_estimators=n_estimators,
+            random_state=random_seed
+        )
+
+        self.model = MultiOutputClassifier(
+            base_model
+        )
+
+        self.targets = {}
+        self.target_scores = {}
+
+        self.is_trained = False
+
+    # ========================================================
+    # FEATURE ENCODING
+    # ========================================================
+
+    @staticmethod
+    def encode_features(sample):
+        """
+        Convert each round into:
+
+            [syndrome_1,
+             syndrome_2,
+             detection_1,
+             detection_2]
+
+        Example for 5 rounds:
+
+            5 x 4 = 20 features
+        """
+
+        syndrome_history = (
+            sample["observed_syndrome_history"]
+        )
+
+        detection_events = (
+            sample["detection_events"]
+        )
+
+        if len(syndrome_history) != len(
+            detection_events
+        ):
+            raise ValueError(
+                "syndrome history and detection "
+                "event history must have the "
+                "same length"
+            )
+
+        features = []
+
+        for syndrome, detection in zip(
+            syndrome_history,
+            detection_events
+        ):
+            if len(syndrome) != 2:
+                raise ValueError(
+                    "syndrome must contain 2 bits"
+                )
+
+            if len(detection) != 2:
+                raise ValueError(
+                    "detection event must contain "
+                    "2 bits"
+                )
+
+            features.extend([
+                int(syndrome[0]),
+                int(syndrome[1]),
+                int(detection[0]),
+                int(detection[1]),
+            ])
+
+        return features
+
+    # ========================================================
+    # TRAIN
+    # ========================================================
+
+    def train(
+        self,
+        training_samples
+    ):
+        """
+        Build logical-preserving targets
+        from training data and train the
+        Random Forest decoder.
+        """
+
+        if not training_samples:
+            raise ValueError(
+                "training_samples cannot be empty"
+            )
+
+        # Build logical targets ONLY from
+        # training data.
+        (
+            self.targets,
+            self.target_scores
+        ) = self.target_builder.build(
+            training_samples
+        )
+
+        X = []
+        y = []
+
+        for sample in training_samples:
+
+            observation = (
+                self.target_builder.observation_key(
+                    sample[
+                        "observed_syndrome_history"
+                    ]
+                )
+            )
+
+            features = self.encode_features(
+                sample
+            )
+
+            target = self.targets[
+                observation
+            ]
+
+            X.append(features)
+            y.append(target)
+
+        X = np.asarray(
+            X,
+            dtype=np.float32
+        )
+
+        y = np.asarray(
+            y,
+            dtype=np.int64
+        )
+
+        self.model.fit(
+            X,
+            y
+        )
+
+        self.is_trained = True
+
+        return self
+
+    # ========================================================
+    # PREDICT
+    # ========================================================
+
+    def predict(self, X):
+        """
+        Predict correction patterns
+        for a batch of feature vectors.
+        """
+
+        if not self.is_trained:
+            raise RuntimeError(
+                "Decoder must be trained "
+                "before prediction"
+            )
+
+        X = np.asarray(
+            X,
+            dtype=np.float32
+        )
+
+        predictions = self.model.predict(
+            X
+        )
+
+        return predictions.tolist()
+
+    # ========================================================
+    # PREDICT PROBABILITY
+    # ========================================================
+
+    def predict_proba(self, X):
+        """
+        Return per-qubit class probabilities.
+        """
+
+        if not self.is_trained:
+            raise RuntimeError(
+                "Decoder must be trained "
+                "before prediction"
+            )
+
+        X = np.asarray(
+            X,
+            dtype=np.float32
+        )
+
+        return self.model.predict_proba(
+            X
+        )
+
+    # ========================================================
+    # SINGLE SAMPLE DECODE
+    # ========================================================
+
+    def decode(self, sample):
+        """
+        Decode one complete QEC sample.
+        """
+
+        if not self.is_trained:
+            raise RuntimeError(
+                "Decoder must be trained "
+                "before decoding"
+            )
+
+        features = self.encode_features(
+            sample
+        )
+
+        prediction = self.predict(
+            [features]
+        )
+
+        return prediction[0]
+
+    # ========================================================
+    # BATCH DECODE
+    # ========================================================
+
+    def decode_batch(self, samples):
+        """
+        Decode multiple QEC samples.
+        """
+
+        if not self.is_trained:
+            raise RuntimeError(
+                "Decoder must be trained "
+                "before decoding"
+            )
+
+        X = np.asarray(
+            [
+                self.encode_features(sample)
+                for sample in samples
+            ],
+            dtype=np.float32
+        )
+
+        return self.predict(X)
+
+    # ========================================================
+    # TRAINING TARGET
+    # ========================================================
+
+    def get_training_target(
+        self,
+        sample
+    ):
+        """
+        Return the logical-preserving target
+        assigned to a training observation.
+        """
+
+        observation = (
+            self.target_builder.observation_key(
+                sample[
+                    "observed_syndrome_history"
+                ]
+            )
+        )
+
+        return self.target_builder.get_target(
+            observation,
+            self.targets
+        )
+
+    # ========================================================
+    # TARGET SCORE
+    # ========================================================
+
+    def get_target_score(
+        self,
+        sample
+    ):
+        """
+        Return the empirical logical-success
+        score of the training target for
+        this observation.
+        """
+
+        observation = (
+            self.target_builder.observation_key(
+                sample[
+                    "observed_syndrome_history"
+                ]
+            )
+        )
+
+        if observation not in self.target_scores:
+            return 0.0
+
+        return self.target_scores[
+            observation
+        ]
+class LogicalRecovery:
+    """
+    Logical recovery for the 3-qubit repetition code.
+
+    The code space is:
+
+        |0>L = |000>
+        |1>L = |111>
+
+    After correction, majority voting determines
+    the recovered logical state.
+
+    Examples:
+
+        000 -> logical 0
+        001 -> logical 0
+        010 -> logical 0
+        100 -> logical 0
+
+        111 -> logical 1
+        110 -> logical 1
+        101 -> logical 1
+        011 -> logical 1
+    """
+
+    def validate_state(self, state):
+        """
+        Validate a 3-qubit physical state.
+        """
+
+        if len(state) != 3:
+            raise ValueError(
+                "state must contain exactly 3 bits"
+            )
+
+        if any(
+            bit not in (0, 1)
+            for bit in state
+        ):
+            raise ValueError(
+                "state must contain only 0 and 1"
+            )
+
+    def recover(self, state):
+        """
+        Recover the logical state using majority voting.
+        """
+
+        self.validate_state(state)
+
+        number_of_ones = sum(state)
+
+        if number_of_ones >= 2:
+            return 1
+
+        return 0
+
+    def expected_state(self, logical_state):
+        """
+        Return the ideal physical codeword.
+        """
+
+        if logical_state == 0:
+            return [0, 0, 0]
+
+        if logical_state == 1:
+            return [1, 1, 1]
+
+        raise ValueError(
+            "logical_state must be 0 or 1"
+        )
+
+    def is_logical_success(
+        self,
+        original_logical_state,
+        corrected_state
+    ):
+        """
+        Determine whether the recovered logical
+        state matches the original logical state.
+        """
+
+        recovered_state = self.recover(
+            corrected_state
+        )
+
+        return (
+            recovered_state
+            == original_logical_state
+        )
+
+    def recover_sample(
+        self,
+        original_logical_state,
+        corrected_state
+    ):
+        """
+        Complete logical recovery for one sample.
+        """
+
+        recovered_state = self.recover(
+            corrected_state
+        )
+
+        success = (
+            recovered_state
+            == original_logical_state
+        )
+
+        return {
+            "original_logical_state":
+                original_logical_state,
+
+            "recovered_logical_state":
+                recovered_state,
+
+            "logical_success":
+                success,
+
+            "logical_failure":
+                not success
+        }
+import time
+
+from evaluation.logical_recovery import (
+    LogicalRecovery
+)
+
+
+class DecoderEvaluator:
+    """
+    Reusable evaluator for QEC decoders.
+
+    Evaluates:
+
+        1. Exact error accuracy
+        2. Physical recovery
+        3. Bit accuracy
+        4. Logical success
+        5. Inference latency
+
+    IMPORTANT:
+
+    Logical success is evaluated using:
+
+        encoded state
+              +
+        actual physical error
+              +
+        predicted correction
+              â†“
+        corrected physical state
+              â†“
+        logical recovery
+
+    The decoder is NOT given the ground-truth
+    physical error during prediction.
+    """
+
+    def __init__(self):
+        self.recovery = LogicalRecovery()
+
+    # ========================================================
+    # INPUT VALIDATION
+    # ========================================================
+
+    @staticmethod
+    def validate_samples(samples):
+        if not samples:
+            raise ValueError(
+                "samples cannot be empty"
+            )
+
+    @staticmethod
+    def validate_prediction(prediction):
+        if not isinstance(
+            prediction,
+            (list, tuple)
+        ):
+            raise ValueError(
+                "prediction must be a list or tuple"
+            )
+
+        if len(prediction) != 3:
+            raise ValueError(
+                "prediction must contain 3 bits"
+            )
+
+        if any(
+            int(bit) not in (0, 1)
+            for bit in prediction
+        ):
+            raise ValueError(
+                "prediction must contain only 0 and 1"
+            )
+
+    # ========================================================
+    # CORRUPTED STATE
+    # ========================================================
+
+    @staticmethod
+    def corrupted_state(
+        sample
+    ):
+        """
+        Calculate:
+
+            encoded_state XOR actual_error
+        """
+
+        encoded_state = [
+            int(bit)
+            for bit in sample[
+                "encoded_state"
+            ]
+        ]
+
+        actual_error = [
+            int(bit)
+            for bit in sample[
+                "final_error_state"
+            ]
+        ]
+
+        if len(encoded_state) != 3:
+            raise ValueError(
+                "encoded_state must contain 3 bits"
+            )
+
+        if len(actual_error) != 3:
+            raise ValueError(
+                "final_error_state must contain 3 bits"
+            )
+
+        return [
+            encoded_state[index]
+            ^ actual_error[index]
+            for index in range(3)
+        ]
+
+    # ========================================================
+    # CORRECTED STATE
+    # ========================================================
+
+    def corrected_state(
+        self,
+        sample,
+        prediction
+    ):
+        """
+        Calculate:
+
+            corrupted_state XOR prediction
+        """
+
+        self.validate_prediction(
+            prediction
+        )
+
+        corrupted = self.corrupted_state(
+            sample
+        )
+
+        return [
+            corrupted[index]
+            ^ int(prediction[index])
+            for index in range(3)
+        ]
+
+    # ========================================================
+    # EXACT ERROR ACCURACY
+    # ========================================================
+
+    @staticmethod
+    def exact_error_match(
+        sample,
+        prediction
+    ):
+        """
+        True when predicted correction exactly
+        matches the actual physical error pattern.
+        """
+
+        actual = tuple(
+            int(bit)
+            for bit in sample[
+                "final_error_state"
+            ]
+        )
+
+        predicted = tuple(
+            int(bit)
+            for bit in prediction
+        )
+
+        return actual == predicted
+
+    # ========================================================
+    # BIT ACCURACY
+    # ========================================================
+
+    def calculate_bit_accuracy(
+        self,
+        samples,
+        predictions
+    ):
+        """
+        Calculate per-bit prediction accuracy.
+        """
+
+        if len(samples) != len(predictions):
+            raise ValueError(
+                "samples and predictions "
+                "must have the same length"
+            )
+
+        total_bits = 0
+        correct_bits = 0
+
+        for sample, prediction in zip(
+            samples,
+            predictions
+        ):
+
+            self.validate_prediction(
+                prediction
+            )
+
+            actual = sample[
+                "final_error_state"
+            ]
+
+            for actual_bit, predicted_bit in zip(
+                actual,
+                prediction
+            ):
+
+                total_bits += 1
+
+                if (
+                    int(actual_bit)
+                    ==
+                    int(predicted_bit)
+                ):
+                    correct_bits += 1
+
+        if total_bits == 0:
+            return 0.0
+
+        return (
+            correct_bits
+            / total_bits
+        )
+
+    # ========================================================
+    # LOGICAL SUCCESS
+    # ========================================================
+
+    def logical_success(
+        self,
+        sample,
+        prediction
+    ):
+        """
+        Determine whether the predicted
+        correction preserves the logical state.
+        """
+
+        corrected = self.corrected_state(
+            sample,
+            prediction
+        )
+
+        recovered_logical = (
+            self.recovery.recover(
+                corrected
+            )
+        )
+
+        expected_logical = int(
+            sample["logical_state"]
+        )
+
+        return (
+            recovered_logical
+            ==
+            expected_logical
+        )
+
+    # ========================================================
+    # PHYSICAL RECOVERY
+    # ========================================================
+
+    def physical_recovery(
+        self,
+        sample,
+        prediction
+    ):
+        """
+        Physical recovery means the final
+        corrected physical state exactly equals
+        the encoded logical state.
+        """
+
+        corrected = self.corrected_state(
+            sample,
+            prediction
+        )
+
+        encoded = [
+            int(bit)
+            for bit in sample[
+                "encoded_state"
+            ]
+        ]
+
+        return corrected == encoded
+
+    # ========================================================
+    # EXACT ERROR ACCURACY
+    # ========================================================
+
+    def calculate_exact_accuracy(
+        self,
+        samples,
+        predictions
+    ):
+        if len(samples) != len(predictions):
+            raise ValueError(
+                "samples and predictions "
+                "must have the same length"
+            )
+
+        correct = 0
+
+        for sample, prediction in zip(
+            samples,
+            predictions
+        ):
+
+            if self.exact_error_match(
+                sample,
+                prediction
+            ):
+                correct += 1
+
+        return (
+            correct / len(samples)
+        )
+
+    # ========================================================
+    # PHYSICAL RECOVERY ACCURACY
+    # ========================================================
+
+    def calculate_physical_accuracy(
+        self,
+        samples,
+        predictions
+    ):
+        if len(samples) != len(predictions):
+            raise ValueError(
+                "samples and predictions "
+                "must have the same length"
+            )
+
+        correct = 0
+
+        for sample, prediction in zip(
+            samples,
+            predictions
+        ):
+
+            if self.physical_recovery(
+                sample,
+                prediction
+            ):
+                correct += 1
+
+        return (
+            correct / len(samples)
+        )
+
+    # ========================================================
+    # LOGICAL SUCCESS ACCURACY
+    # ========================================================
+
+    def calculate_logical_accuracy(
+        self,
+        samples,
+        predictions
+    ):
+        if len(samples) != len(predictions):
+            raise ValueError(
+                "samples and predictions "
+                "must have the same length"
+            )
+
+        correct = 0
+
+        for sample, prediction in zip(
+            samples,
+            predictions
+        ):
+
+            if self.logical_success(
+                sample,
+                prediction
+            ):
+                correct += 1
+
+        return (
+            correct / len(samples)
+        )
+
+    # ========================================================
+    # INFERENCE LATENCY
+    # ========================================================
+
+    @staticmethod
+    def measure_inference(
+        decoder,
+        samples
+    ):
+        """
+        Measure batch decoding time.
+
+        The decoder's decode_batch()
+        method is expected.
+        """
+
+        start = time.perf_counter()
+
+        predictions = decoder.decode_batch(
+            samples
+        )
+
+        elapsed = (
+            time.perf_counter()
+            - start
+        )
+
+        return predictions, elapsed
+
+    # ========================================================
+    # FULL EVALUATION
+    # ========================================================
+
+    def evaluate(
+        self,
+        decoder,
+        samples
+    ):
+        """
+        Run complete decoder evaluation.
+
+        Returns:
+
+            exact
+            physical
+            bit
+            logical
+            inference_seconds
+            samples_per_second
+        """
+
+        self.validate_samples(
+            samples
+        )
+
+        predictions, inference_seconds = (
+            self.measure_inference(
+                decoder,
+                samples
+            )
+        )
+
+        exact = (
+            self.calculate_exact_accuracy(
+                samples,
+                predictions
+            )
+        )
+
+        physical = (
+            self.calculate_physical_accuracy(
+                samples,
+                predictions
+            )
+        )
+
+        bit = (
+            self.calculate_bit_accuracy(
+                samples,
+                predictions
+            )
+        )
+
+        logical = (
+            self.calculate_logical_accuracy(
+                samples,
+                predictions
+            )
+        )
+
+        if inference_seconds > 0:
+            throughput = (
+                len(samples)
+                / inference_seconds
+            )
+        else:
+            throughput = float("inf")
+
+        return {
+            "exact": exact,
+            "physical": physical,
+            "bit": bit,
+            "logical": logical,
+            "inference_seconds": (
+                inference_seconds
+            ),
+            "samples_per_second": (
+                throughput
+            ),
+            "sample_count": len(samples),
+        }

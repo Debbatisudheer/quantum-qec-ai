@@ -1,0 +1,45 @@
+AI-POWERED QUANTUM ERROR CORRECTION SYSTEM
+SCIENTIFIC EVALUATION REPORT
+
+================================================================================
+EXPERIMENT
+QEC code: bit_flip_3
+Rounds: 5
+Training samples: 2000
+Test samples per seed: 2000
+Random Forest estimators: 100
+Seeds: [42, 43, 44]
+
+PRIMARY RESULT
+--------------------------------------------------------------------------------
+Physical Noise | Baseline | AI-QEC | Gain | Error Reduction
+--------------------------------------------------------------------------------
+          0.01 |   99.28% | 99.37% | +0.08% |         11.63%
+          0.03 |   95.45% | 97.60% | +2.15% |         47.25%
+          0.05 |   89.27% | 94.82% | +5.55% |         51.71%
+          0.10 |   73.42% | 84.17% | +10.75% |         40.44%
+          0.15 |   62.75% | 71.97% | +9.22% |         24.74%
+          0.20 |   55.08% | 59.92% | +4.83% |         10.76%
+
+STATISTICAL INFORMATION
+--------------------------------------------------------------------------------
+Noise 0.01: bootstrap CI [0.00%, 0.20%], permutation p=1.00000
+Noise 0.03: bootstrap CI [1.42%, 2.92%], permutation p=0.00040
+Noise 0.05: bootstrap CI [4.32%, 6.80%], permutation p=0.00010
+Noise 0.10: bootstrap CI [8.77%, 12.73%], permutation p=0.00010
+Noise 0.15: bootstrap CI [6.82%, 11.60%], permutation p=0.00010
+Noise 0.20: bootstrap CI [2.37%, 7.35%], permutation p=0.00630
+
+SUMMARY
+--------------------------------------------------------------------------------
+Conditions evaluated: 6
+Positive-gain conditions: 6
+Maximum absolute gain: 10.75% at physical noise 0.10
+Maximum logical-error reduction: 51.71% at physical noise 0.05
+
+INTERPRETATION
+--------------------------------------------------------------------------------
+The paired comparison evaluates baseline and AI-QEC on identical held-out noisy samples.
+Logical success is treated as the primary system-level QEC metric.
+The bootstrap and paired permutation statistics provide experimental evidence, but results should be interpreted within the tested 3-qubit repetition-code configuration.
+These results do not establish universal superiority across other QEC codes, noise models, circuit depths, or decoder architectures.

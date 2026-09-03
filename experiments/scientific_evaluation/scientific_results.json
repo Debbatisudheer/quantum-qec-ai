@@ -1,0 +1,136 @@
+{
+    "source": "experiments\\paired_results\\paired_baseline_ai_results.json",
+    "metadata": {
+        "rounds": 5,
+        "training_samples": 2000,
+        "test_samples": 2000,
+        "random_forest_estimators": 100,
+        "seeds": [
+            42,
+            43,
+            44
+        ],
+        "physical_noise_levels": [
+            0.01,
+            0.03,
+            0.05,
+            0.1,
+            0.15,
+            0.2
+        ],
+        "measurement_noise": 0.0,
+        "bootstrap_iterations": 10000
+    },
+    "results": [
+        {
+            "physical_noise": 0.01,
+            "measurement_noise": 0.0,
+            "baseline_logical_success": 0.9928333333333333,
+            "ai_logical_success": 0.9936666666666666,
+            "absolute_gain": 0.0008333333333333334,
+            "relative_gain": 0.000839348665435622,
+            "baseline_logical_error": 0.0071666666666666545,
+            "ai_logical_error": 0.006333333333333413,
+            "logical_error_reduction": 0.11627906976742926,
+            "bootstrap_ci_low": 0.0,
+            "bootstrap_ci_high": 0.002,
+            "permutation_p_value": 1.0,
+            "seed_count": 3,
+            "test_samples_per_seed": 2000
+        },
+        {
+            "physical_noise": 0.03,
+            "measurement_noise": 0.0,
+            "baseline_logical_success": 0.9545,
+            "ai_logical_success": 0.976,
+            "absolute_gain": 0.021500000000000002,
+            "relative_gain": 0.022524882137244632,
+            "baseline_logical_error": 0.045499999999999985,
+            "ai_logical_error": 0.02400000000000002,
+            "logical_error_reduction": 0.4725274725274719,
+            "bootstrap_ci_low": 0.014166666666666666,
+            "bootstrap_ci_high": 0.029166666666666664,
+            "permutation_p_value": 0.00039996000399960006,
+            "seed_count": 3,
+            "test_samples_per_seed": 2000
+        },
+        {
+            "physical_noise": 0.05,
+            "measurement_noise": 0.0,
+            "baseline_logical_success": 0.8926666666666666,
+            "ai_logical_success": 0.9481666666666667,
+            "absolute_gain": 0.0555,
+            "relative_gain": 0.062173263629574316,
+            "baseline_logical_error": 0.10733333333333339,
+            "ai_logical_error": 0.05183333333333329,
+            "logical_error_reduction": 0.5170807453416156,
+            "bootstrap_ci_low": 0.043166666666666666,
+            "bootstrap_ci_high": 0.068,
+            "permutation_p_value": 9.999000099990002e-05,
+            "seed_count": 3,
+            "test_samples_per_seed": 2000
+        },
+        {
+            "physical_noise": 0.1,
+            "measurement_noise": 0.0,
+            "baseline_logical_success": 0.7341666666666667,
+            "ai_logical_success": 0.8416666666666667,
+            "absolute_gain": 0.1075,
+            "relative_gain": 0.14642451759364358,
+            "baseline_logical_error": 0.26583333333333325,
+            "ai_logical_error": 0.15833333333333333,
+            "logical_error_reduction": 0.40438871473354215,
+            "bootstrap_ci_low": 0.08766666666666667,
+            "bootstrap_ci_high": 0.12733333333333333,
+            "permutation_p_value": 9.999000099990002e-05,
+            "seed_count": 3,
+            "test_samples_per_seed": 2000
+        },
+        {
+            "physical_noise": 0.15,
+            "measurement_noise": 0.0,
+            "baseline_logical_success": 0.6275000000000001,
+            "ai_logical_success": 0.7196666666666666,
+            "absolute_gain": 0.09216666666666666,
+            "relative_gain": 0.14687915006640104,
+            "baseline_logical_error": 0.37249999999999994,
+            "ai_logical_error": 0.28033333333333343,
+            "logical_error_reduction": 0.24742729306487657,
+            "bootstrap_ci_low": 0.06816666666666667,
+            "bootstrap_ci_high": 0.11599999999999999,
+            "permutation_p_value": 9.999000099990002e-05,
+            "seed_count": 3,
+            "test_samples_per_seed": 2000
+        },
+        {
+            "physical_noise": 0.2,
+            "measurement_noise": 0.0,
+            "baseline_logical_success": 0.5508333333333333,
+            "ai_logical_success": 0.5991666666666667,
+            "absolute_gain": 0.04833333333333334,
+            "relative_gain": 0.08774583963691379,
+            "baseline_logical_error": 0.4491666666666667,
+            "ai_logical_error": 0.40083333333333326,
+            "logical_error_reduction": 0.10760667903525072,
+            "bootstrap_ci_low": 0.02366666666666667,
+            "bootstrap_ci_high": 0.0735,
+            "permutation_p_value": 0.006299370062993701,
+            "seed_count": 3,
+            "test_samples_per_seed": 2000
+        }
+    ],
+    "summary": {
+        "conditions": 6,
+        "positive_gain_conditions": 6,
+        "maximum_absolute_gain": {
+            "physical_noise": 0.1,
+            "measurement_noise": 0.0,
+            "gain": 0.1075
+        },
+        "maximum_error_reduction": {
+            "physical_noise": 0.05,
+            "measurement_noise": 0.0,
+            "reduction": 0.5170807453416156
+        }
+    }
+}
