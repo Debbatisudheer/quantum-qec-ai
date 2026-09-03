@@ -2,65 +2,171 @@ AI-Powered Quantum Error Correction System
 
 An AI-focused quantum error-correction research platform built entirely with classical quantum simulation.
 
-The project investigates whether a machine-learning decoder can learn from quantum error-correction observations and predict useful corrections that improve logical quantum-information recovery.
+The project studies whether a machine-learning decoder can learn from quantum error-correction observations and predict useful corrections that improve logical quantum-information recovery.
 
-Important: This project currently uses Qiskit/Aer simulation on a classical computer. It does not use physical quantum hardware.
+Important: The current system uses Qiskit/Aer simulation on a classical computer. It does not use physical quantum hardware.
 
-1. Project Goal
+Table of Contents
 
-The central AI research question is:
+Overview
+
+Research Question
+
+How the System Works
+
+Current Scope
+
+AI Decoder
+
+Why the Target Is Logical-Aware
+
+Dataset and Features
+
+Training and Inference
+
+Correction and Logical Recovery
+
+Evaluation Metrics
+
+AI vs Baseline
+
+Experimental Results
+
+Statistical Validation
+
+Noise Robustness
+
+Application Architecture
+
+Project Structure
+
+Important Files
+
+Installation and Setup
+
+Running the Project
+
+Testing
+
+Scientific Experiments
+
+Development Problems Solved
+
+Limitations
+
+Future Research
+
+Interview Explanation
+
+Quick Memory Refresh
+
+Project Status
+
+Overview
+
+Quantum systems are sensitive to errors. Quantum error correction (QEC) attempts to protect logical quantum information by observing error-related information and applying appropriate corrections.
+
+This project adds machine learning to that decoding stage.
+
+The quantum simulator creates the noisy QEC problem. The QEC layer produces observations. Those observations are converted into machine-learning features. The AI decoder predicts a correction, the correction is applied, and the final result is evaluated by checking whether the original logical information was recovered.
+
+The central flow is:
+
+Quantum Simulation
+       |
+       v
+Quantum Noise
+       |
+       v
+Syndrome Generation
+       |
+       v
+Syndrome + Detection Events
+       |
+       v
+AI Decoder
+       |
+       v
+Predicted Correction
+       |
+       v
+Apply Correction
+       |
+       v
+Logical Recovery
+       |
+       v
+Evaluation
+       |
+       v
+AI vs Baseline
+
+The primary AI model is a logical-target Random Forest decoder.
+
+Research Question
+
+The main research question is:
 
 Can machine learning learn to decode syndrome information and choose corrections that improve logical quantum-error recovery?
 
-The high-level flow is:
+The project is designed to answer that question experimentally within the current simulation scope.
 
-Quantum Simulation
-       ↓
-Quantum Noise
-       ↓
-Syndrome Generation
-       ↓
-Syndrome + Detection-Event Features
-       ↓
+How the System Works
+
+At a high level, the complete AI workflow is:
+
+Noise
+  |
+  v
+Syndrome Observations
+  |
+  v
+Detection Events
+  |
+  v
+Feature Engineering
+  |
+  v
 AI Decoder
-       ↓
+  |
+  v
 Predicted Correction
-       ↓
-Apply Correction
-       ↓
+  |
+  v
+Correction Engine
+  |
+  v
 Logical Recovery
-       ↓
-Evaluation
-       ↓
+  |
+  v
+Metrics
+  |
+  v
 AI vs Baseline
+  |
+  v
+Scientific Analysis
 
-The current primary AI model is a:
+The AI does not receive the hidden physical error as its input.
 
-Logical-target Random Forest decoder
-
-2. What the AI Does
-
-The AI does not directly receive the hidden physical error.
-
-Instead, it receives information derived from the QEC measurement process:
+Instead, it works from information that would be available through the QEC observation process:
 
 Observed Syndrome History
-+
+          +
 Detection-Event History
-        ↓
-Feature Vector
-        ↓
-Random Forest
-        ↓
-3-bit Predicted Correction
+          |
+          v
+     Feature Vector
+          |
+          v
+    Random Forest
+          |
+          v
+  3-bit Correction
 
-The predicted correction is then applied to the simulated quantum state.
+This distinction is important because a decoder should make its decision from observed information rather than being given the answer directly.
 
-The final question is:
-
-Did the correction preserve the original logical information?
-
-3. Current Project Scope
+Current Scope
 
 The current implementation focuses on:
 
@@ -98,9 +204,11 @@ Experiment result storage
 
 Scientific evaluation and visualization
 
-4. Important Scope Boundary
+Automated testing
 
-Do not describe the current project as:
+Scope boundary
+
+The current project should not be described as:
 
 a physical quantum computer
 
@@ -116,109 +224,49 @@ The accurate description is:
 
 A classical simulation platform for researching AI-based quantum-error decoding and logical recovery.
 
-5. Core AI Architecture
+The QEC Problem
 
-                    DATA GENERATION
-                          │
-                          ▼
-                  QEC SIMULATION DATA
-                          │
-                          ▼
-                 SYNDROME OBSERVATION
-                          │
-                          ▼
-                  DETECTION EVENTS
-                          │
-                          ▼
-                 FEATURE ENGINEERING
-                          │
-                          ▼
-                  TARGET ENGINEERING
-                          │
-                          ▼
-                   TRAINING DATA
-                          │
-                          ▼
-                RANDOM FOREST TRAINING
-                          │
-                          ▼
-                   TRAINED DECODER
-                          │
-                          ▼
-                    NEW SAMPLE
-                          │
-                          ▼
-                  FEATURE ENCODING
-                          │
-                          ▼
-                    AI INFERENCE
-                          │
-                          ▼
-                PREDICTED CORRECTION
-                          │
-                          ▼
-                  CORRECTION ENGINE
-                          │
-                          ▼
-                  LOGICAL RECOVERY
-                          │
-                          ▼
-                     EVALUATION
-                          │
-                          ▼
-                  BASELINE COMPARISON
-                          │
-                          ▼
-                 SCIENTIFIC ANALYSIS
-
-6. Quantum/QEC Layer — Only What AI Needs
-
-The AI needs QEC information as input.
-
-The current code uses a 3-qubit repetition code.
+The current system uses a 3-qubit repetition code.
 
 Logical states are encoded as:
 
-Logical 0 → 000
-Logical 1 → 111
+Logical 0 -> 000
+Logical 1 -> 111
 
-Physical errors can change individual qubits.
+A physical error can change one or more individual qubits.
 
-The QEC system measures stabilizer information and produces a syndrome.
+The QEC system measures stabilizer information and produces a syndrome. For the current 3-qubit code, the syndrome represents the observed error pattern.
 
-For the current 3-qubit code:
+Conceptually:
 
-Syndrome
-00 → no detected single-qubit error
-01 → one error pattern
-10 → another error pattern
-11 → another error pattern
+00 -> no detected single-qubit error
+01 -> one error pattern
+10 -> another error pattern
+11 -> another error pattern
 
-The exact syndrome mapping is implemented in the QEC layer.
+The exact syndrome mapping is implemented by the QEC layer.
 
-The AI does not need to know the hidden error directly.
+The AI does not need direct access to the hidden physical error.
 
-7. Repeated QEC
+Repeated QEC Rounds
 
-The project can perform multiple QEC rounds.
+The system can perform multiple QEC rounds.
 
-Default:
+The current default is:
 
 rounds = 5
 
 Conceptually:
 
-Round 1 → syndrome
-Round 2 → syndrome
-Round 3 → syndrome
-Round 4 → syndrome
-Round 5 → syndrome
+Round 1 -> syndrome
+Round 2 -> syndrome
+Round 3 -> syndrome
+Round 4 -> syndrome
+Round 5 -> syndrome
 
-The AI uses this history instead of relying only on one final observation.
+Instead of using only one observation, the AI can use the history across multiple rounds.
 
-8. Syndrome History
-
-Example:
+For example:
 
 00
 10
@@ -226,145 +274,291 @@ Example:
 01
 00
 
-This is the syndrome history across five rounds.
+This sequence represents the syndrome history across five rounds.
 
 The history provides temporal information about how the observed error signal changes.
 
-9. Detection Events
+Detection Events
 
 A detection event describes a change between consecutive syndrome observations.
 
-Formula:
+The relationship is:
 
-DetectionEvent[t]
-=
-Syndrome[t-1] XOR Syndrome[t]
+DetectionEvent[t] =
+    Syndrome[t-1] XOR Syndrome[t]
 
-Example:
+For example:
 
 Previous syndrome = 00
 Current syndrome  = 10
 
-Detection event = 10
+Detection event   = 10
 
-The AI therefore receives two related kinds of information:
+Therefore, the AI receives two related kinds of information:
 
-Syndrome history
-+
-Changes in syndrome history
+Syndrome History
+       +
+Changes in Syndrome History
+       |
+       v
+Machine-Learning Features
 
-10. Measurement Noise
+Measurement Noise
 
-The project can corrupt syndrome observations with measurement noise.
+The simulator can also corrupt syndrome observations with measurement noise.
 
-Therefore:
+The process is:
 
 Perfect Syndrome
-       ↓
+       |
+       v
 Measurement Noise
-       ↓
+       |
+       v
 Observed Syndrome
 
-The AI normally works with the observed information, not the hidden perfect syndrome.
+The AI normally works with the observed information rather than the hidden perfect syndrome.
 
-This makes the decoding problem harder and more realistic.
+This makes the decoding problem more difficult and provides a more realistic simulation of imperfect observations.
 
-11. AI Dataset Pipeline
+AI Decoder
 
-Every generated sample follows approximately:
+AI Architecture
 
-Choose logical state
-       ↓
-Encode logical state
-       ↓
-Generate physical error history
-       ↓
-Run QEC rounds
-       ↓
-Generate syndrome history
-       ↓
-Apply measurement noise
-       ↓
-Create observed syndrome history
-       ↓
-Calculate detection events
-       ↓
-Encode features
-       ↓
-Create logical-aware target
-       ↓
-Store sample
+The core AI pipeline is:
 
-12. Training Data
+Data Generation
+       |
+       v
+QEC Simulation Data
+       |
+       v
+Syndrome Observation
+       |
+       v
+Detection Events
+       |
+       v
+Feature Engineering
+       |
+       v
+Target Engineering
+       |
+       v
+Training Data
+       |
+       v
+Random Forest Training
+       |
+       v
+Trained Decoder
+       |
+       v
+New Sample
+       |
+       v
+Feature Encoding
+       |
+       v
+AI Inference
+       |
+       v
+Predicted Correction
+       |
+       v
+Correction Engine
+       |
+       v
+Logical Recovery
+       |
+       v
+Evaluation
+
+Primary Model
+
+The primary decoder is:
+
+LogicalTargetRandomForestDecoder
+
+It is based on:
+
+RandomForestClassifier
++
+MultiOutputClassifier
+
+MultiOutputClassifier is used because the decoder predicts multiple correction bits.
+
+The current default is:
+
+n_estimators = 100
+
+Why Random Forest?
+
+Random Forest was selected because it:
+
+works well with structured/tabular features
+
+provides a relatively simple machine-learning approach
+
+is fast enough for the current simulation
+
+is comparatively interpretable
+
+provides a useful baseline for future model comparisons
+
+The project does not claim that Random Forest is universally optimal for QEC decoding.
+
+What the AI Predicts
+
+The AI predicts a three-bit correction.
+
+For example:
+
+010
+
+The three bits correspond to correction actions on the three physical qubits.
+
+Conceptually:
+
+Output bit 0 -> correction for qubit 0
+Output bit 1 -> correction for qubit 1
+Output bit 2 -> correction for qubit 2
+
+The predicted correction is then passed to the correction engine.
+
+Why the Target Is Logical-Aware
+
+One of the most important design decisions is that the objective is logical recovery, not simply exact identification of the hidden physical error.
+
+The reasoning is:
+
+Observed Information
+        |
+        v
+Candidate Corrections
+        |
+        v
+Test Logical Outcome
+        |
+        v
+Choose Useful Correction
+        |
+        v
+Training Target
+
+This is called the logical-target approach.
+
+A correction does not necessarily need to reproduce the exact physical error pattern if another correction produces the same desired logical outcome.
+
+Exact Error Match vs Logical Success
+
+These are different concepts and must not be confused.
+
+Exact physical-error match
+
+Actual Error == Predicted Correction
+
+Logical success
+
+After applying the predicted correction:
+
+Original logical information is recovered
+
+Therefore, an AI prediction can fail exact physical-error matching and still succeed logically.
+
+For this project, logical success is the more important system-level outcome.
+
+Dataset and Features
+
+Dataset Generation
+
+Each synthetic sample follows approximately:
+
+Choose Logical State
+       |
+       v
+Encode Logical State
+       |
+       v
+Generate Physical Error History
+       |
+       v
+Run QEC Rounds
+       |
+       v
+Generate Syndrome History
+       |
+       v
+Apply Measurement Noise
+       |
+       v
+Create Observed Syndrome History
+       |
+       v
+Calculate Detection Events
+       |
+       v
+Encode Features
+       |
+       v
+Create Logical-Aware Target
+       |
+       v
+Store Sample
+
+Because the system is simulation-based, the simulator knows the ground truth for generated samples. This makes supervised-learning target generation and evaluation possible.
+
+Training Data
 
 A training dataset contains many examples of:
 
 Input:
-syndrome/detection-event features
+syndrome and detection-event features
 
 Target:
 useful correction
 
-Example conceptually:
+Conceptually:
 
-Features → [0,1,0,0,1,...]
-Target   → [0,1,0]
+Features -> [0, 1, 0, 0, 1, ...]
+Target   -> [0, 1, 0]
 
 The actual feature length depends on the number of QEC rounds.
 
-13. Test Data
+Test Data
 
-Test samples are held out from training.
+Test samples are held out from training:
 
-The structure is:
+Training Samples
+       |
+       v
+AI Learns
+       |
+       v
+Held-Out Test Samples
+       |
+       v
+AI Evaluation
 
-Training samples
-      ↓
-AI learns
+The test set must not be used to train the model. This helps protect the validity of the evaluation.
 
-Held-out test samples
-      ↓
-AI is evaluated
+Feature Engineering
 
-The test set must not be used to train the model.
+Feature engineering converts QEC observations into numerical machine-learning input.
 
-This protects the validity of the evaluation.
-
-14. Why Synthetic Data Is Used
-
-The project is simulation-based.
-
-The simulator knows the ground truth for each generated sample.
-
-That allows us to create supervised-learning targets and evaluate whether the AI's predicted correction actually succeeds.
-
-15. Random Seeds
-
-Experiments use controlled random seeds.
-
-Examples:
-
-42
-43
-44
-
-This improves reproducibility and allows repeated experiments under different random realizations.
-
-16. Feature Engineering
-
-The feature-engineering stage converts QEC observations into numerical machine-learning input.
-
-Conceptually:
+The basic process is:
 
 Observed Syndrome History
-+
+          +
 Detection Events
-        ↓
-Feature Encoder
-        ↓
-Numerical Feature Vector
+          |
+          v
+    Feature Encoder
+          |
+          v
+   Numerical Feature Vector
 
-The current logical-target Random Forest uses a per-round representation conceptually like:
+The logical-target Random Forest uses a per-round representation conceptually like:
 
 Round 1:
 s1, s2, d1, d2
@@ -377,7 +571,7 @@ s1, s2, d1, d2
 Round N:
 s1, s2, d1, d2
 
-17. Feature Interface Adapter
+Feature Interface Adapter
 
 One integration path represents features as:
 
@@ -391,168 +585,68 @@ s1, s2, d1, d2
 
 for each round.
 
-Therefore an adapter converts between these representations.
+Therefore, an adapter converts between these representations:
 
 Integration Features
-        ↓
+       |
+       v
 Feature Adapter
-        ↓
-RF Decoder Features
+       |
+       v
+Random Forest Feature Format
 
-The adapter exists so the existing decoder can be reused without changing its core logic.
+The adapter allows the existing decoder to be reused without changing its core logic.
 
-18. The AI Target
+Training and Inference
 
-The AI predicts a three-bit correction.
-
-Example:
-
-010
-
-The three bits correspond to correction actions on the three physical qubits.
-
-19. Why the Target Is Logical-Aware
-
-A major design decision in this project is that the ultimate objective is logical recovery, not simply exact identification of the physical error.
-
-Conceptually:
-
-Observation
-    ↓
-Candidate corrections
-    ↓
-Test logical outcome
-    ↓
-Choose useful correction
-    ↓
-Training target
-
-This is called the logical-target approach.
-
-20. Exact Error vs Logical Success
-
-These are different metrics.
-
-Exact error match
-
-Actual error == Predicted correction
-
-Logical success
-
-After applying predicted correction,
-the original logical information is recovered.
-
-An AI prediction can therefore:
-
-fail exact matching
-
-but still:
-
-succeed logically
-
-This is important when interpreting results.
-
-21. Main AI Model
-
-The primary decoder is:
-
-LogicalTargetRandomForestDecoder
-
-It is based on:
-
-RandomForestClassifier
-
-with:
-
-MultiOutputClassifier
-
-because the decoder predicts multiple correction bits.
-
-22. Random Forest
-
-A Random Forest combines many decision trees.
-
-Current default:
-
-n_estimators = 100
-
-Conceptually:
-
-Features
-   │
-   ├── Tree 1
-   ├── Tree 2
-   ├── Tree 3
-   ├── ...
-   └── Tree 100
-          ↓
-   Combined prediction
-          ↓
-   Correction bits
-
-23. Why Random Forest
-
-Random Forest was selected as the primary decoder because it works well with structured/tabular features and provides a relatively simple, fast, interpretable machine-learning baseline.
-
-It is not claimed to be universally optimal.
-
-24. Multi-Output Classification
-
-The correction contains three bits.
-
-Example:
-
-010
-
-Conceptually:
-
-Output bit 0 → 0
-Output bit 1 → 1
-Output bit 2 → 0
-
-These predictions form the final correction vector.
-
-25. AI Training
+Training
 
 Training follows:
 
-Training samples
-       ↓
-Feature matrix X
-       +
-Target matrix y
-       ↓
-Random Forest
-       ↓
-fit()
-       ↓
-Trained decoder
+Training Samples
+       |
+       +------> Feature Matrix X
+       |
+       +------> Target Matrix y
+                    |
+                    v
+              Random Forest
+                    |
+                   fit()
+                    |
+                    v
+             Trained Decoder
 
-The learned mapping is approximately:
+The learned relationship is approximately:
 
-syndrome-related observations
-              ↓
-        useful correction
+Syndrome-Related Observations
+             |
+             v
+      Useful Correction
 
-26. AI Inference
+Inference
 
-When a new sample arrives:
+For a new sample:
 
-New syndrome observations
-        ↓
-Detection events
-        ↓
-Feature encoding
-        ↓
+New Syndrome Observations
+          |
+          v
+Detection Events
+          |
+          v
+Feature Encoding
+          |
+          v
 Trained Random Forest
-        ↓
-Predicted correction
+          |
+          v
+Predicted Correction
 
 Example:
 
 Prediction = 010
 
-27. Decoder Interface
+Decoder Interface
 
 The decoder supports operations conceptually including:
 
@@ -562,39 +656,42 @@ predict_proba(X)
 decode(sample)
 decode_batch(samples)
 
-This gives the AI subsystem a clean interface.
+This keeps the AI subsystem modular and makes it possible to compare or replace models later.
 
-It also makes it possible to compare or replace models later.
+AI Confidence
 
-28. AI Confidence
-
-The Random Forest can provide probability information for its predictions.
+The Random Forest can provide probability information for predictions.
 
 The project can expose a confidence-like value in the trace.
 
-Important:
+However:
 
-Model probability/confidence is not a guarantee that the correction is correct.
+Model probability/confidence is not a guarantee that the predicted correction is correct.
 
-29. AI → Correction
+Correction and Logical Recovery
 
-The AI produces the decision:
+AI to Correction
+
+The separation between decision-making and action is intentional:
+
+AI Decoder
+     |
+     v
+Decision
+     |
+     v
+Correction Engine
+     |
+     v
+Action
+
+For example:
 
 Predicted correction = 010
 
-The correction engine then applies that decision to the simulated state.
+The correction engine applies that decision to the simulated quantum state.
 
-Separation:
-
-AI Decoder
-    ↓
-Decision
-
-Correction Engine
-    ↓
-Action
-
-30. Correction Mathematics
+Correction Mathematics
 
 Let:
 
@@ -607,7 +704,7 @@ Corrupted state
 =
 Encoded state XOR e
 
-and:
+After the AI correction:
 
 Corrected state
 =
@@ -625,35 +722,39 @@ e = c
 
 the physical error is exactly cancelled.
 
-But exact cancellation is stricter than logical recovery.
+However, exact cancellation is stricter than logical recovery.
 
-31. Logical Recovery
+Logical Recovery
 
-After correction, the system evaluates whether the original logical state is recovered.
+After correction, the system evaluates whether the original logical state was recovered.
 
 For the current 3-qubit repetition code, majority information determines the recovered logical state.
 
-The AI's ultimate purpose is:
+The important objective is:
 
-Predicted correction
-       ↓
-Logical recovery
-       ↓
-Preserve logical information
+Predicted Correction
+       |
+       v
+Logical Recovery
+       |
+       v
+Preserve Logical Information
 
-32. AI Evaluation Metrics
+Evaluation Metrics
 
-The project evaluates several dimensions.
+The project evaluates multiple dimensions of AI performance.
+
+Metric
+
+Question
 
 Exact Accuracy
 
-Did AI predict the exact target?
-
-Exact matches / total samples
+Did the AI predict the exact target?
 
 Physical Recovery
 
-Did AI exactly reverse the physical error?
+Did the AI exactly reverse the physical error?
 
 Bit Accuracy
 
@@ -661,17 +762,15 @@ How many individual correction bits were correct?
 
 Logical Accuracy
 
-Did the correction preserve the logical state?
-
-Logical successes / total samples
+Was the original logical state recovered?
 
 Logical Error Rate
 
-1 - logical accuracy
+What fraction of samples failed logical recovery?
 
 Training Time
 
-How long did the model take to train?
+How long did model training take?
 
 Inference Time
 
@@ -679,11 +778,11 @@ How long did prediction take?
 
 Throughput
 
-samples / second
+How many samples can be processed per second?
 
-33. Primary AI Metric
+Primary AI Metric
 
-For this project, the most important outcome metric is:
+The most important outcome metric for this project is:
 
 Logical Success
 
@@ -692,44 +791,48 @@ because the system exists to preserve logical information.
 The hierarchy is:
 
 AI Prediction
-      ↓
+     |
+     v
 Correction
-      ↓
+     |
+     v
 Logical Recovery
-      ↓
+     |
+     v
 System Objective
 
-34. Baseline
+AI vs Baseline
 
 AI performance needs a reference point.
 
 The project therefore compares:
 
 Baseline
-vs
+   vs
 AI-QEC
 
-The baseline represents traditional/non-AI logical recovery behavior used for comparison.
+The baseline represents the traditional/non-AI logical recovery behavior used for comparison.
 
-35. Why Paired Comparison Was Used
+Paired Comparison
 
-The stronger comparison uses the same held-out test samples for both methods.
+The stronger comparison uses the same held-out test samples for both methods:
 
-Same test sample
-       │
-   ┌───┴────┐
-   ↓        ↓
-Baseline    AI
-   ↓        ↓
-Result    Result
+              Same Test Sample
+                     |
+              +------+------+
+              |             |
+              v             v
+           Baseline       AI-QEC
+              |             |
+              v             v
+           Result          Result
 
-This makes the comparison more controlled.
+Using the same samples makes the comparison more controlled.
 
-36. AI Gain
+AI Gain
 
-Formula:
+Absolute AI gain is:
 
-AI Gain =
 AI Logical Success
 -
 Baseline Logical Success
@@ -741,16 +844,15 @@ Baseline = 73.42%
 
 Gain = +10.75 percentage points
 
-37. Relative Gain
+Relative Gain
 
-Formula:
+Relative gain is:
 
-Relative Gain =
 (AI - Baseline) / Baseline
 
 This describes improvement relative to the baseline level.
 
-38. Logical Error Reduction
+Logical Error Reduction
 
 First:
 
@@ -766,143 +868,11 @@ Baseline Error
 
 This measures how much of the baseline logical error was removed by AI.
 
-39. Statistical Validation
+Experimental Results
 
-The project uses:
+Paired AI vs Baseline Results
 
-Multiple random seeds
-+
-Paired test samples
-+
-Bootstrap confidence intervals
-+
-Permutation testing
-
-The purpose is to determine whether the observed AI improvement is reasonably stable within the experiment.
-
-40. Bootstrap
-
-Bootstrap resampling:
-
-Observed paired results
-        ↓
-Repeated resampling
-        ↓
-Calculate gain repeatedly
-        ↓
-Gain distribution
-        ↓
-Confidence interval
-
-The project uses descriptive 95% bootstrap intervals.
-
-41. Permutation Test
-
-The paired differences are subjected to random sign changes to construct a null distribution.
-
-The implementation uses:
-
-10,000 sign randomizations
-
-Therefore a displayed p-value around:
-
-0.00010
-
-is the resolution limit of this finite permutation procedure, not an infinitely precise probability.
-
-42. Statistical Limitation
-
-The main paired experiments use:
-
-3 independent seeds
-
-Therefore the results are useful experimental evidence for the tested setup, but they should not be presented as universal proof of AI superiority across all QEC systems.
-
-43. AI Noise Sweep
-
-The AI was tested at physical-noise levels:
-
-0.00
-0.01
-0.03
-0.05
-0.10
-0.15
-0.20
-
-Approximate AI logical success:
-
-Physical Noise
-
-AI Logical Success
-
-0.00
-
-100.00%
-
-0.01
-
-99.47%
-
-0.03
-
-97.60%
-
-0.05
-
-94.07%
-
-0.10
-
-83.40%
-
-0.15
-
-71.33%
-
-0.20
-
-59.40%
-
-As noise increases, decoding becomes harder and logical success decreases.
-
-44. AI + Measurement Noise
-
-Combined noise was also tested.
-
-Example:
-
-Physical noise      = 0.10
-Measurement noise   = 0.10
-
-Observed mean AI logical success was approximately:
-
-73.40%
-
-This demonstrates that imperfect syndrome observations make the AI decoding problem harder.
-
-45. Important Measurement-Noise Caveat
-
-The measurement-only experiment:
-
-Physical noise = 0
-Measurement noise > 0
-
-produced:
-
-100% logical success
-
-This should not be overinterpreted as strong proof of measurement-noise robustness.
-
-Why?
-
-Because there was no physical error to correct.
-
-The more meaningful robustness test is combined physical + measurement noise.
-
-46. Paired AI Results
-
-The strongest paired comparison produced:
+The strongest paired comparison produced the following results:
 
 Physical Noise
 
@@ -968,7 +938,7 @@ at:
 
 10% physical noise
 
-47. What the Results Mean
+Interpretation
 
 Within the tested simulation configuration:
 
@@ -978,62 +948,290 @@ at every tested nonzero physical-noise level in the paired study.
 
 This suggests that the learned decoder can exploit syndrome-derived information to improve logical recovery relative to the tested baseline.
 
-Do not generalize this result beyond the tested configuration without additional experiments.
+This result should not be generalized beyond the tested configuration without additional experiments.
 
-48. AI Experiment Engine
+Statistical Validation
+
+The project uses:
+
+multiple random seeds
+
+paired test samples
+
+bootstrap confidence intervals
+
+permutation testing
+
+The purpose is to determine whether the observed AI improvement is reasonably stable within the experiment.
+
+Random Seeds
+
+Controlled random seeds include:
+
+42
+43
+44
+
+Using multiple seeds helps evaluate different random realizations and improves reproducibility.
+
+The main paired experiments use 3 independent seeds.
+
+Bootstrap
+
+Bootstrap analysis follows:
+
+Observed Paired Results
+        |
+        v
+Repeated Resampling
+        |
+        v
+Calculate Gain Repeatedly
+        |
+        v
+Gain Distribution
+        |
+        v
+Confidence Interval
+
+The project uses descriptive 95% bootstrap intervals.
+
+Permutation Test
+
+The paired differences are subjected to random sign changes to construct a null distribution.
+
+The implementation uses:
+
+10,000 sign randomizations
+
+Therefore, a displayed p-value around:
+
+0.00010
+
+is the resolution limit of this finite permutation procedure, not an infinitely precise probability.
+
+Statistical Limitation
+
+Because the main paired experiments use only three independent seeds, the results should be treated as experimental evidence for the tested setup rather than universal proof of AI superiority across all QEC systems.
+
+Noise Robustness
+
+Physical Noise Sweep
+
+The AI was tested at physical-noise levels:
+
+0.00
+0.01
+0.03
+0.05
+0.10
+0.15
+0.20
+
+Approximate AI logical success:
+
+Physical Noise
+
+AI Logical Success
+
+0.00
+
+100.00%
+
+0.01
+
+99.47%
+
+0.03
+
+97.60%
+
+0.05
+
+94.07%
+
+0.10
+
+83.40%
+
+0.15
+
+71.33%
+
+0.20
+
+59.40%
+
+As noise increases, decoding becomes harder and logical success decreases.
+
+Physical + Measurement Noise
+
+Combined noise was also tested.
+
+For example:
+
+Physical noise     = 0.10
+Measurement noise  = 0.10
+
+Observed mean AI logical success was approximately:
+
+73.40%
+
+This demonstrates that imperfect syndrome observations make the AI decoding problem harder.
+
+Measurement-Only Caveat
+
+The measurement-only experiment used:
+
+Physical noise = 0
+Measurement noise > 0
+
+and produced:
+
+100% logical success
+
+This should not be interpreted as strong evidence of measurement-noise robustness because there was no physical error to correct.
+
+The more meaningful robustness test is the combined physical + measurement noise experiment.
+
+Application Architecture
+
+The project is organized into several layers.
+
+                       USER
+                        |
+                        v
+                Experiment Config
+                        |
+                        v
+                Quantum Simulation
+                        |
+                        v
+                      Noise
+                        |
+                        v
+                    QEC System
+                        |
+                        v
+                  Syndrome Data
+                        |
+                        v
+               Feature Engineering
+                        |
+                        v
+              Logical Target Data
+                        |
+                        v
+                +---------------+
+                |   AI Decoder  |
+                | Logical-Target|
+                | Random Forest |
+                +-------+-------+
+                        |
+                        v
+              Predicted Correction
+                        |
+                        v
+                Correction Engine
+                        |
+                        v
+                 Logical Recovery
+                        |
+                        v
+                     Metrics
+                    /       \
+                   v         v
+              Baseline     AI-QEC
+                   \         /
+                    \       /
+                     v     v
+                Paired Comparison
+                        |
+                        v
+                Statistical Analysis
+                        |
+                        v
+                 Scientific Results
+                    /           \
+                   v             v
+              FastAPI          Next.js
+              Backend          Dashboard
+
+Experiment Engine
 
 The experiment engine automates:
 
 Configuration
-    ↓
-Training data generation
-    ↓
-AI training
-    ↓
-Test data generation
-    ↓
-AI inference
-    ↓
+     |
+     v
+Training Data Generation
+     |
+     v
+AI Training
+     |
+     v
+Test Data Generation
+     |
+     v
+AI Inference
+     |
+     v
 Evaluation
-    ↓
-Result storage
+     |
+     v
+Result Storage
 
 Important configuration values include:
 
 QEC code
-Number of qubits
-Logical state
-Rounds
-Physical noise probability
-Measurement noise probability
-Training samples
-Test samples
-Decoder type
-Random Forest estimators
-Random seed
 
-49. AI Result Storage
+number of qubits
+
+logical state
+
+number of rounds
+
+physical noise probability
+
+measurement noise probability
+
+training samples
+
+test samples
+
+decoder type
+
+Random Forest estimators
+
+random seed
+
+Result Storage and Analysis
 
 Experiment results are stored as JSON.
 
 Stored information includes:
 
-Experiment ID
-Configuration
-Training sample count
-Test sample count
-Target information
-Accuracy metrics
-Training time
-Inference time
-Throughput
-Decoder type
+experiment ID
 
-This makes experiments reproducible and comparable later.
+configuration
 
-50. AI Result Analysis
+training sample count
 
-Stored experiments can be:
+test sample count
+
+target information
+
+accuracy metrics
+
+training time
+
+inference time
+
+throughput
+
+decoder type
+
+Stored experiments can then be:
 
 Filtered
 Sorted
@@ -1043,97 +1241,117 @@ Summarized
 For example:
 
 Find experiments at 10% physical noise
-        ↓
+        |
+        v
 Sort by logical accuracy
-        ↓
+        |
+        v
 Compare decoders
 
-51. Scientific Evaluation Layer
+Scientific Evaluation and Visualization
 
 The scientific evaluation layer converts paired experiment results into reusable scientific metrics.
 
 It calculates:
 
-Baseline success
-AI success
-Absolute gain
-Relative gain
-Baseline error
-AI error
-Error reduction
-Bootstrap CI
-Permutation p-value
-Seed count
-Test samples per seed
+baseline success
 
-52. AI Visualization
+AI success
+
+absolute gain
+
+relative gain
+
+baseline error
+
+AI error
+
+error reduction
+
+bootstrap confidence interval
+
+permutation p-value
+
+seed count
+
+test samples per seed
 
 Scientific plots include:
 
-Logical success vs noise
-Paired AI gain
-Bootstrap confidence intervals
-Logical error rate
-Combined-noise heatmap
+logical success vs noise
 
-These help understand where the AI performs well and where performance degrades.
+paired AI gain
 
-53. AI Live Trace
+bootstrap confidence intervals
+
+logical error rate
+
+combined-noise heatmap
+
+These visualizations help show where the AI performs well and where performance degrades.
+
+AI Live Trace
 
 The application provides a single-sample AI trace.
 
 Conceptually:
 
 Sample
- ↓
-Physical error
- ↓
-Perfect syndrome
- ↓
-Observed syndrome
- ↓
-Detection events
- ↓
-AI decoder
- ↓
-Predicted correction
- ↓
-Corrected state
- ↓
-Logical recovery
+  |
+  v
+Physical Error
+  |
+  v
+Perfect Syndrome
+  |
+  v
+Observed Syndrome
+  |
+  v
+Detection Events
+  |
+  v
+AI Decoder
+  |
+  v
+Predicted Correction
+  |
+  v
+Corrected State
+  |
+  v
+Logical Recovery
 
-This makes one AI decision explainable step-by-step.
+This makes one AI decision explainable step by step.
 
-54. Important Trace Interpretation
+Important Trace Interpretation
 
 A trace may show:
 
-Actual error      = 000
-Predicted correction = 010
-
-and:
-
-Exact match = NO
-
-while:
-
-Logical success = YES
+Actual error          = 000
+Predicted correction  = 010
+Exact match           = NO
+Logical success       = YES
 
 This is not necessarily a bug.
 
 It demonstrates the distinction between:
 
-Exact physical prediction
+Exact Physical Prediction
 
 and:
 
-Logical preservation
+Logical Preservation
 
-55. Backend AI Architecture
+Never assume that a predicted correction is the hidden physical error unless exact matching has actually been verified.
+
+Backend and Frontend
+
+FastAPI Backend
 
 The backend exposes the AI/QEC system through FastAPI.
 
-Main AI-related operations include:
+Important operations include:
 
 POST /simulate
 POST /simulate/trace
@@ -1142,9 +1360,7 @@ GET /experiments
 GET /experiments/best
 GET /experiments/worst
 GET /experiments/compare
-
 GET /results/{experiment_id}
-
 GET /experiments/summary
 GET /experiments/analysis
 GET /experiments/visualization
@@ -1153,37 +1369,59 @@ GET /scientific/evaluation
 GET /scientific/results
 GET /scientific/summary
 
-56. Frontend AI Architecture
+Current development port:
 
-The Next.js frontend displays:
+Backend -> 8001
 
-Experiment configuration
-        ↓
+Health endpoint:
+
+GET /health
+
+Expected response:
+
+{
+  "status": "ok",
+  "service": "quantum-qec-ai"
+}
+
+Next.js Frontend
+
+The frontend provides:
+
+Experiment Configuration
+        |
+        v
 Simulation
-        ↓
-AI/QEC trace
-        ↓
-Predicted correction
-        ↓
-Logical recovery
-        ↓
-Scientific results
-        ↓
-Experiment analysis
+        |
+        v
+AI/QEC Trace
+        |
+        v
+Predicted Correction
+        |
+        v
+Logical Recovery
+        |
+        v
+Scientific Results
+        |
+        v
+Experiment Analysis
 
-The frontend communicates with the backend API.
+Current development port:
 
-Current development ports:
+Frontend -> 3001
 
-Backend  → 8001
-Frontend → 3001
+The frontend API base URL is currently:
 
-Ports may be changed if those ports are unavailable.
+http://127.0.0.1:8001
 
-57. Project Structure
+Ports may be changed if they are unavailable.
+
+Project Structure
 
 quantum-qec-ai/
-│
+|
 ├── backend/
 │   ├── main.py
 │   ├── api/
@@ -1191,38 +1429,38 @@ quantum-qec-ai/
 │   │   └── routes.py
 │   └── services/
 │       └── trace_service.py
-│
+|
 ├── quantum/
 │   ├── circuit.py
 │   ├── simulator.py
 │   ├── repeated_qec.py
 │   ├── repeated_measurement.py
 │   └── state_evaluator.py
-│
+|
 ├── qec/
 │   └── bit_flip_3.py
-│
+|
 ├── noise/
 │   ├── bit_flip.py
 │   ├── quantum_bit_flip.py
 │   └── stochastic_repeated_noise.py
-│
+|
 ├── syndrome/
-│   └── ...
-│
+│   ├── extractor.py
+│   └── measurement_noise.py
+|
 ├── dataset/
 │   └── ...
-│
+|
 ├── decoders/
 │   └── ...
-│
+|
 ├── correction/
 │   └── ...
-│
+|
 ├── evaluation/
-│   ├── ...
-│   └── scientific_evaluation.py
-│
+│   └── ...
+|
 ├── experiments/
 │   ├── config.py
 │   ├── engine.py
@@ -1233,9 +1471,8 @@ quantum-qec-ai/
 │   ├── report.py
 │   ├── export.py
 │   ├── visualization.py
-│   ├── quantum_ai_decoder_integration.py
-│   └── results/
-│
+│   └── ...
+|
 ├── scripts/
 │   ├── scientific_validation.py
 │   ├── baseline_comparison.py
@@ -1244,37 +1481,34 @@ quantum-qec-ai/
 │   ├── statistical_analysis.py
 │   ├── paired_baseline_ai_comparison.py
 │   └── scientific_plots.py
-│
+|
 ├── frontend/
 │   ├── app/
 │   │   └── page.tsx
-│   └── components/
+│   └── component/
 │       ├── SiteHeader.tsx
 │       └── SiteFooter.tsx
-│
+|
 ├── tests/
-│
 ├── configs/
-├── storage/
-├── notebooks/
-├── docs/
+├── main.py
+├── requirements.txt
+├── .gitignore
 └── README.md
 
-58. Important Files to Remember
+Important Files
 
-AI decoder
+Purpose
 
-Look inside:
+File
 
-decoders/
+Primary AI decoder
 
-especially the logical-target Random Forest implementation.
+decoders/logical_target_random_forest.py
 
 AI + quantum integration
 
 experiments/quantum_ai_decoder_integration.py
-
-This connects the AI decoder with the real Qiskit simulation flow.
 
 Experiment configuration
 
@@ -1288,7 +1522,7 @@ Scientific evaluation
 
 evaluation/scientific_evaluation.py
 
-AI trace API service
+AI trace service
 
 backend/services/trace_service.py
 
@@ -1302,17 +1536,19 @@ frontend/app/page.tsx
 
 Header
 
-frontend/components/SiteHeader.tsx
+frontend/component/SiteHeader.tsx
 
 Footer
 
-frontend/components/SiteFooter.tsx
+frontend/component/SiteFooter.tsx
 
-59. Environment Setup
+Installation and Setup
 
-Use the project virtual environment.
+The project is developed with a Python virtual environment.
 
-Windows PowerShell:
+Windows PowerShell
+
+Activate the environment:
 
 .\.venv\Scripts\Activate.ps1
 
@@ -1320,7 +1556,7 @@ Verify Python:
 
 where.exe python
 
-Expected:
+The Python executable should point into:
 
 ...\quantum-qec-ai\.venv\Scripts\python.exe
 
@@ -1328,15 +1564,15 @@ Verify Qiskit:
 
 python -c "import qiskit; print(qiskit.__file__)"
 
-The Qiskit path should point into:
+The Qiskit installation should point into:
 
 .venv\Lib\site-packages
 
-60. Start Backend
+Running the Project
 
-Activate the virtual environment first.
+Start the Backend
 
-Then:
+From the project root:
 
 python -m uvicorn backend.main:app --port 8001
 
@@ -1346,105 +1582,104 @@ http://127.0.0.1:8001
 
 Health check:
 
-GET /health
+http://127.0.0.1:8001/health
 
-Expected:
+Start the Frontend
 
-{
-  "status": "ok",
-  "service": "quantum-qec-ai"
-}
+Move into:
 
-61. Start Frontend
+cd frontend
 
-From:
+Then run the normal Next.js development command configured by the project.
 
-frontend/
-
-run the normal Next.js development command configured by the project.
-
-Current development server was using:
+The current development server was using:
 
 http://localhost:3001
 
-The frontend API base URL must point to the backend:
+The frontend should communicate with:
 
 http://127.0.0.1:8001
 
-62. Run Tests
+Testing
 
-From project root:
+From the project root:
 
 python -m pytest -q
 
-Current full-suite status at the time this README was written:
+Current full-suite status when this README was prepared:
 
 99 passed
 29 warnings
 
 The warnings are pytest diagnostic warnings caused by some tests returning values rather than using assertions. They are warnings, not failed tests.
 
-63. Run Scientific Validation
+Scientific Experiments
 
-Use module execution from the project root:
+Run scripts from the project root using Python module execution.
+
+Scientific Validation
 
 python -m scripts.scientific_validation
 
-Do not use:
+Use module execution from the project root rather than:
 
 python scripts\scientific_validation.py
 
-if it causes Python import-path problems.
+when the latter causes Python import-path problems.
 
-The module form keeps the project root available for imports.
-
-64. Run Baseline Comparison
+Baseline Comparison
 
 python -m scripts.baseline_comparison
 
-This evaluates the non-AI baseline across physical-noise levels.
+Evaluates the non-AI baseline across physical-noise levels.
 
-65. Run AI Noise Sweep
+AI Noise Sweep
 
 python -m scripts.ai_noise_sweep
 
-This evaluates AI logical recovery across physical-noise levels.
+Evaluates AI logical recovery across physical-noise levels.
 
-66. Run Combined Noise Matrix
+Combined Noise Matrix
 
 python -m scripts.noise_robustness_matrix
 
-This evaluates combinations of:
+Evaluates combinations of:
 
-Physical noise
+Physical Noise
 +
-Measurement noise
+Measurement Noise
 
-67. Run Statistical Analysis
+Statistical Analysis
 
 python -m scripts.statistical_analysis
 
-This analyzes:
+Analyzes:
 
-Baseline
+baseline
+
 AI-QEC
-Gain
-Logical error
-Error reduction
-Confidence intervals
-Combined-noise behavior
 
-68. Run Paired Comparison
+gain
+
+logical error
+
+error reduction
+
+confidence intervals
+
+combined-noise behavior
+
+Paired Baseline vs AI Comparison
 
 python -m scripts.paired_baseline_ai_comparison
 
 This performs the controlled same-test-sample comparison between baseline and AI-QEC.
 
-The paired results are stored under:
+Paired results are stored under:
 
 experiments/paired_results/
 
-69. Generate Scientific Plots
+Scientific Plots
 
 python -m scripts.scientific_plots
 
@@ -1454,7 +1689,7 @@ experiments/paired_results/plots/
 
 with logical-success, gain, confidence-interval, logical-error, and heatmap visualizations.
 
-70. Scientific Evaluation Outputs
+Scientific Evaluation Outputs
 
 The scientific evaluation can produce:
 
@@ -1463,19 +1698,19 @@ experiments/scientific_evaluation/
 ├── scientific_results.csv
 └── scientific_report.txt
 
-71. Important Development Problems Already Solved
+Development Problems Solved
 
-Qiskit environment mismatch
+Qiskit Environment Mismatch
 
-Problem:
+Problem
 
 ModuleNotFoundError: No module named 'qiskit'
 
-Cause:
+Cause
 
 Uvicorn reload was using the global Python installation instead of the virtual environment.
 
-Solution:
+Solution
 
 .\.venv\Scripts\Activate.ps1
 
@@ -1483,7 +1718,7 @@ Then verify:
 
 where.exe python
 
-72. Port 8000 Conflict
+Backend Port Conflict
 
 Port 8000 was already occupied.
 
@@ -1495,44 +1730,32 @@ Run:
 
 python -m uvicorn backend.main:app --port 8001
 
-73. Frontend Port
+Frontend Port Conflict
 
 Port 3000 was already occupied, so Next.js used:
 
 3001
 
-This is independent from the backend port.
+The ports are independent:
 
-Frontend → 3001
-Backend  → 8001
+Frontend -> 3001
+Backend  -> 8001
 
-74. Frontend API Connection
+Frontend API Connection
 
-The frontend initially attempted to call:
-
-8000
-
-while the backend was running on:
-
-8001
+The frontend initially attempted to call port 8000 while the backend was running on 8001.
 
 The frontend API base URL was corrected to:
 
 http://127.0.0.1:8001
 
-75. Trace API Type Bug
+Trace API Type Bug
 
-The trace API initially returned:
+The trace API initially returned actual_error as a list while the frontend schema expected a string.
 
-actual_error
+The service was corrected to convert the error bits into a string representation.
 
-as a list.
-
-The frontend schema expected a string.
-
-The service was corrected to convert error bits to a string representation.
-
-76. Trace Semantic Bug
+Trace Semantic Bug
 
 The trace initially used a post-correction state as the corrupted state.
 
@@ -1540,364 +1763,440 @@ That was semantically incorrect.
 
 The correct relationship is:
 
-Encoded
-   XOR
-Actual error
-   ↓
-Corrupted
+Encoded State
+      XOR
+Actual Error
+      |
+      v
+Corrupted State
 
 The service now calculates the corrupted state explicitly.
 
-77. Decoder Feature Mismatch
+Decoder Feature Mismatch
 
 The integration layer and Random Forest decoder used different feature layouts.
 
 An adapter was added:
 
-Integration features
-       ↓
+Integration Features
+       |
+       v
 Adapter
-       ↓
-RF feature format
+       |
+       v
+RF Feature Format
 
 This avoided rewriting the decoder.
 
-78. Important AI Interpretation Rule
+Limitations
 
-Never say:
+The current results should be interpreted within the scope of the implementation.
 
-AI predicted 010
-therefore actual error was 010
+Simulation only
 
-unless exact error matching has actually been verified.
+The system currently runs on a classical computer using Qiskit/Aer simulation.
 
-Instead say:
+It has not been validated on physical quantum hardware.
 
-AI predicted correction = 010
+Small QEC code
 
-Then evaluate:
+The current QEC implementation is a 3-qubit bit-flip repetition code.
 
-Did this correction successfully recover
-the logical information?
+It is not a surface-code implementation or a general-purpose quantum decoder.
 
-79. Current AI Research Position
+Limited random seeds
 
-The project has progressed beyond a simple AI demo.
+The main paired experiments use three independent seeds:
 
-It now contains:
+42, 43, 44
 
-AI model
-+
-Dataset generation
-+
-Logical target design
-+
-Real quantum simulation integration
-+
-Correction
-+
-Logical evaluation
-+
-Baseline
-+
-Paired comparison
-+
-Statistical validation
-+
-Noise sweeps
-+
-Scientific plots
-+
-API
-+
-Dashboard
-+
-Live trace
+More independent trials would strengthen statistical confidence.
 
-80. What Is Already Complete
+Measurement-only experiment
 
-Core development is complete for the current scope:
+A measurement-noise-only experiment produced 100% logical success because physical noise was zero. This is weak evidence for measurement-noise robustness.
 
-Quantum simulation
+Combined physical and measurement noise is more meaningful.
+
+Exact physical error is not the same as logical success
+
+A decoder can fail to reproduce the exact physical error and still preserve the logical state.
+
+Therefore, results should be interpreted using logical recovery as the primary system-level metric.
+
+Statistical scope
+
+Bootstrap and permutation results provide evidence for the tested experimental configuration. They do not prove universal AI superiority across all QEC codes, noise models, hardware platforms, or datasets.
+
+Future Research
+
+The next major research directions are:
+
+Larger QEC Codes
+       |
+       v
+More Realistic Noise
+       |
+       v
+Larger Datasets
+       |
+       v
+Hyperparameter Optimization
+       |
+       v
+Deep-Learning Decoders
+       |
+       v
+Temporal Models
+       |
+       v
+Graph Neural Networks
+       |
+       v
+Real Quantum-Hardware Data
+
+Possible future model directions include:
+
+larger Random Forest studies
+
+temporal neural networks
+
+GRU-based decoders
+
+graph neural networks
+
+larger QEC codes
+
+more realistic noise models
+
+hardware-generated datasets
+
+Interview Explanation
+
+If asked:
+
+What exactly did AI do in your project?
+
+A concise answer is:
+
+I used machine learning as the decoding layer of a quantum error-correction system. The QEC simulation generates syndrome histories and detection events, which I convert into numerical features. I then train a logical-target Random Forest decoder to predict a useful three-bit correction. The predicted correction is applied to the simulated quantum state, and I evaluate the result based on logical recovery rather than only exact physical-error matching. Finally, I compare the AI decoder with a baseline across different noise levels using paired test samples and statistical analysis.
+
+Quick Memory Refresh
+
+If returning to the project after several weeks, remember this:
+
+QEC simulation creates noisy quantum states.
+
+        ↓
+
+QEC produces syndrome observations.
+
+        ↓
+
+Syndrome history + detection events become
+machine-learning features.
+
+        ↓
+
+The AI uses a logical-aware correction target.
+
+        ↓
+
+The primary model is a Random Forest.
+
+        ↓
+
+AI learns:
+
+syndrome features -> useful correction
+
+        ↓
+
+For a new sample:
+
+syndrome -> features -> AI -> correction
+
+        ↓
+
+The correction is applied to the simulated state.
+
+        ↓
+
+Logical recovery determines whether the
+original logical information was preserved.
+
+        ↓
+
+AI-QEC is compared with a baseline.
+
+        ↓
+
+Scientific analysis evaluates the observed difference.
+
+Five things to remember
+
+Concept
+
+Current implementation
+
+Input
+
+Syndrome history + detection events
+
+Features
+
+Numerical representation of those observations
+
+Target
+
+Logical-aware correction
+
+Model
+
+Logical-target Random Forest
+
+Objective
+
+Improve logical recovery
+
+One-Minute Project Summary
+
+I built an AI-powered quantum error-correction system using Qiskit/Aer simulation on a classical computer.
+
+The system uses a 3-qubit bit-flip repetition code. Noise creates physical errors, and QEC produces syndrome observations. I preserve the syndrome history and calculate detection events. These observations become machine-learning features.
+
+The primary AI model is a logical-target Random Forest decoder. Instead of learning only the hidden physical-error label, it learns to predict a correction that is useful for logical recovery.
+
+For a new sample:
+
+Syndrome
+   ->
+Features
+   ->
+AI Decoder
+   ->
+Predicted Correction
+   ->
+Logical Recovery
+
+The AI decoder is evaluated using logical success, logical error rate, exact accuracy, physical recovery, bit accuracy, training time, inference time, and throughput.
+
+I also compare AI-QEC with a baseline using the same held-out test samples, multiple random seeds, bootstrap confidence intervals, and permutation testing.
+
+The strongest paired result in the tested configuration was at 10% physical noise:
+
+Baseline = 73.42%
+AI-QEC   = 84.17%
+Gain     = +10.75 percentage points
+
+The system also includes:
+
+FastAPI backend
+
+Next.js dashboard
+
+live AI/QEC trace
+
+scientific evaluation
+
+experiment storage
+
+scientific visualizations
+
+automated tests
+
+Final Architecture
+
+                         USER
+                          |
+                          v
+                  EXPERIMENT CONFIG
+                          |
+                          v
+                  QUANTUM SIMULATION
+                          |
+                          v
+                        NOISE
+                          |
+                          v
+                       QEC SYSTEM
+                          |
+                          v
+                     SYNDROME DATA
+                          |
+                          v
+                  FEATURE ENGINEERING
+                          |
+                          v
+                 LOGICAL TARGET DATA
+                          |
+                          v
+              +-----------------------+
+              |       AI DECODER      |
+              | Logical-Target RF    |
+              +-----------+-----------+
+                          |
+                          v
+                 PREDICTED CORRECTION
+                          |
+                          v
+                   CORRECTION ENGINE
+                          |
+                          v
+                   LOGICAL RECOVERY
+                          |
+                          v
+                       METRICS
+                      /       \
+                     v         v
+                 BASELINE    AI-QEC
+                     \         /
+                      \       /
+                       v     v
+                  PAIRED COMPARISON
+                          |
+                          v
+                  STATISTICAL ANALYSIS
+                          |
+                          v
+                  SCIENTIFIC RESULTS
+                     /           \
+                    v             v
+                FASTAPI        NEXT.JS
+                BACKEND        DASHBOARD
+
+Project Status
+
+Current status: Core AI-QEC development is complete for the present 3-qubit simulation scope.
+
+The project currently contains:
+
+quantum simulation
 
 3-qubit QEC
 
-Noise simulation
+noise simulation
 
-Syndrome generation
+syndrome generation
 
-Detection events
+detection events
 
-Dataset generation
+dataset generation
 
 AI decoder
 
-Logical-target learning
+logical-target learning
 
-Correction
+correction
 
-Logical recovery
+logical recovery
 
-Evaluation
+evaluation
 
-Baseline
+baseline comparison
 
-Scientific experiments
+scientific experiments
 
-Statistical comparison
+statistical comparison
 
-Result storage
+result storage
 
-FastAPI
+FastAPI backend
 
 AI trace
 
 Next.js dashboard
 
-Scientific visualization
+scientific visualization
 
-Header/footer components
-
-Automated tests
+automated tests
 
 Remaining work is mainly:
 
-Production polish
-Documentation
+production polish
+
+documentation refinement
+
 UI refinement
-Warning cleanup
-Additional research
-Larger AI models
-Larger QEC codes
-Hardware validation
 
-81. Current AI Model
+warning cleanup
 
-Remember:
+additional research
 
-Primary decoder:
-LogicalTargetRandomForestDecoder
+larger QEC codes
 
-Default:
+more realistic noise models
 
-Random Forest estimators = 100
+larger datasets
 
-82. Current AI Dataset Defaults
+hardware validation
 
-The main experiment configuration currently uses:
+Final Project Identity
 
-Training samples = 5000
-Test samples     = 1000
-Rounds           = 5
-Seed             = 42
+Item
 
-Scientific experiments may intentionally use different sample counts for controlled sweeps.
+Current Project
 
-Always check the script/configuration being run rather than assuming every experiment uses the same values.
+Project
 
-83. Current QEC Defaults
+AI-Powered Quantum Error Correction System
 
-QEC code:
-bit_flip_3
+Research Area
 
-Physical qubits:
-3
+Machine Learning + Quantum Error Correction
 
-Rounds:
-5
+Primary AI Model
 
-84. Current Noise Defaults
+Logical-target Random Forest
 
-The experiment configuration supports:
+AI Input
 
-Physical noise probability
-Measurement noise probability
+Syndrome history + detection events
 
-Both are configurable between:
+AI Output
 
-0.0 and 1.0
+Predicted physical correction
 
-85. AI Interview Explanation
+Primary Objective
 
-If asked:
+Logical information preservation
 
-"What exactly did AI do in your project?"
+Quantum Environment
 
-Answer:
+Classical Qiskit/Aer simulation
 
-"I used machine learning as the decoding layer. The QEC simulation generates syndrome histories and detection events, which I convert into numerical features. I then train a logical-target Random Forest decoder to predict a useful three-bit correction. The predicted correction is applied to the simulated quantum state, and I evaluate the result based on logical recovery rather than only exact physical-error matching. Finally, I compare the AI decoder with a baseline across different noise levels using paired test samples and statistical analysis."
+Scientific Comparison
 
-86. AI Flow to Memorize
+AI-QEC vs baseline
 
-Noise
- ↓
-Syndrome
- ↓
-Features
- ↓
-AI Decoder
- ↓
-Correction
- ↓
-Logical Recovery
- ↓
-Evaluation
- ↓
-AI vs Baseline
+Strongest Reported Result
 
-87. The Five Most Important AI Concepts
+At 10% physical noise, AI-QEC achieved 84.17% logical success vs 73.42% for the baseline, a +10.75 percentage-point gain in the tested configuration
 
-If returning to the project after a long time, remember these first:
-
-1. Input
-
-Syndrome history
-+
-Detection events
-
-2. Features
-
-Numerical representation of those observations
-
-3. Target
-
-Logical-aware correction
-
-4. Model
-
-Random Forest
-
-5. Objective
-
-Improve logical recovery
-
-88. One-Minute Project Memory Refresh
-
-When you come back after several weeks, read this:
-
-I built an AI-powered QEC system.
-
-The quantum system is simulated using Qiskit/Aer.
-
-I use a 3-qubit bit-flip repetition code.
-
-Noise creates physical errors.
-
-QEC produces syndrome observations.
-
-I preserve syndrome history and calculate detection events.
-
-Those observations become machine-learning features.
-
-The target is a logically useful correction rather than
-only an exact physical-error label.
-
-The primary AI model is a logical-target Random Forest.
-
-It learns:
-syndrome features → correction.
-
-For a new sample:
-syndrome → features → AI → predicted correction.
-
-The correction is applied to the simulated state.
-
-Then I measure logical recovery.
-
-I compare AI-QEC against a baseline using the same held-out
-test samples.
-
-I tested multiple noise levels and multiple random seeds.
-
-I also performed bootstrap confidence intervals and permutation
-testing.
-
-The strongest paired result was at 10% physical noise:
-Baseline = 73.42%
-AI-QEC   = 84.17%
-Gain     = +10.75 percentage points.
-
-The system also has:
-FastAPI backend
-Next.js dashboard
-live AI/QEC trace
-scientific evaluation
-experiment storage
-visualizations
-and automated tests.
-
-89. Final Architecture
-
-                         USER
-                          │
-                          ▼
-                    EXPERIMENT CONFIG
-                          │
-                          ▼
-                  QUANTUM SIMULATION
-                          │
-                          ▼
-                       NOISE
-                          │
-                          ▼
-                     QEC SYSTEM
-                          │
-                          ▼
-                    SYNDROME DATA
-                          │
-                          ▼
-                  FEATURE ENGINEERING
-                          │
-                          ▼
-                  LOGICAL TARGET DATA
-                          │
-                          ▼
-                 ┌────────────────────┐
-                 │   AI DECODER       │
-                 │                    │
-                 │ Logical-Target RF  │
-                 └─────────┬──────────┘
-                           │
-                           ▼
-                  PREDICTED CORRECTION
-                           │
-                           ▼
-                   CORRECTION ENGINE
-                           │
-                           ▼
-                   LOGICAL RECOVERY
-                           │
-                           ▼
-                       METRICS
-                           │
-             ┌─────────────┴─────────────┐
-             ▼                           ▼
-        BASELINE                      AI-QEC
-             │                           │
-             └─────────────┬─────────────┘
-                           ▼
-                  PAIRED COMPARISON
-                           │
-                           ▼
-                  STATISTICAL ANALYSIS
-                           │
-                           ▼
-                    SCIENTIFIC RESULTS
-                           │
-              ┌────────────┴────────────┐
-              ▼                         ▼
-          FASTAPI                    NEXT.JS
-          BACKEND                   DASHBOARD
-
-90. Final Reminder
-
-If you forget everything else, remember:
+Final Reminder
 
 This project is fundamentally an AI decoding project.
 
-The quantum simulator generates the problem.
+QEC creates the decoding problem.
+        |
+        v
+Data represents the problem.
+        |
+        v
+AI learns the decoding pattern.
+        |
+        v
+Correction applies the AI decision.
+        |
+        v
+Logical recovery measures the real outcome.
+        |
+        v
+Scientific comparison evaluates the AI.
 
-The QEC layer generates the observations.
+The quantum simulator creates the problem.
+
+The QEC layer creates the observations.
 
 The dataset converts those observations into learning examples.
 
@@ -1907,68 +2206,4 @@ The correction engine executes the AI decision.
 
 Logical recovery tells us whether the AI decision actually helped.
 
-And the scientific evaluation tells us whether the AI performs better than the baseline.
-
-QEC creates the decoding problem.
-        ↓
-Data represents the problem.
-        ↓
-AI learns the decoding pattern.
-        ↓
-Correction applies the AI decision.
-        ↓
-Logical recovery measures the real outcome.
-        ↓
-Scientific comparison validates the AI.
-
-Project Status
-
-Current status: Core AI-QEC development complete for the present 3-qubit simulation scope.
-
-The next major research directions are:
-
-Larger QEC codes
-        ↓
-More realistic noise
-        ↓
-Larger datasets
-        ↓
-Hyperparameter optimization
-        ↓
-Deep-learning decoders
-        ↓
-Temporal models
-        ↓
-Graph neural networks
-        ↓
-Real quantum-hardware data
-
-Final Project Identity
-
-Project: AI-Powered Quantum Error Correction System
-
-Primary research area:
-Machine Learning + Quantum Error Correction
-
-Primary AI model:
-Logical-target Random Forest
-
-AI input:
-Syndrome history + detection events
-
-AI output:
-Predicted physical correction
-
-Primary objective:
-Logical information preservation
-
-Current quantum environment:
-Classical Qiskit/Aer simulation
-
-Primary scientific comparison:
-AI-QEC vs baseline
-
-Primary reported result:
-At 10% physical noise, paired AI-QEC logical success was 84.17% versus 73.42% for the baseline, a +10.75 percentage-point gain in the tested configuration.
-
-END OF README
+Scientific evaluation tells us how the AI performed compared with the baseline.
