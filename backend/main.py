@@ -18,25 +18,27 @@ app = FastAPI(
 # CORS
 # ---------------------------------------------------------
 #
-# The Next.js frontend runs locally on ports 3000/3001 and
-# in production on Vercel.
+# The frontend is deployed separately from the FastAPI
+# backend. CORS allows the browser-based frontend to call
+# the backend API.
 #
-# The browser treats these as different origins, so the
-# backend must explicitly allow the frontend origins.
+# Local development:
+#   http://localhost:3000
+#   http://localhost:3001
+#   http://127.0.0.1:3000
+#   http://127.0.0.1:3001
+#
+# Production:
+#   Vercel frontend
+#
+# allow_credentials=False is intentional because the
+# current frontend/backend communication does not require
+# browser cookies or credentialed requests.
 # ---------------------------------------------------------
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        # Local frontend
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-
-        # Production frontend
-        "https://quantum-qec-ai-4.vercel.app",
-    ],
+    allow_origins=["*"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
