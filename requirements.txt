@@ -5,4 +5,5 @@ pandas
 scikit-learn
 matplotlib
 pytest
+fastapi
 uvicorn
