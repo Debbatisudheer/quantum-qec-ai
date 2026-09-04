@@ -301,8 +301,8 @@ function ScientificLineChart({
   const aiPoints = data.map((row, i) => `${x(i)},${y(row[aiKey])}`).join(" ");
 
   return (
-    <div className="rounded-xl border border-white/10 bg-[#07111f] p-5">
-      <div className="mb-4 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+    <div className="min-w-0 rounded-xl border border-white/10 bg-[#07111f] p-4 sm:p-5">
+      <div className="mb-4 flex min-w-0 flex-col justify-between gap-2 sm:flex-row sm:items-end">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">{title}</p>
           <p className="mt-1 text-xs text-slate-500">Paired held-out evaluation across physical-noise levels.</p>
@@ -312,8 +312,8 @@ function ScientificLineChart({
           <span className="text-cyan-300">● AI-QEC</span>
         </div>
       </div>
-      <div className="overflow-x-auto">
-        <svg viewBox={`0 0 ${width} ${height}`} className="h-auto min-w-[680px] w-full" role="img" aria-label={title}>
+      <div className="w-full min-w-0 overflow-hidden">
+        <svg viewBox={`0 0 ${width} ${height}`} className="block h-auto w-full max-w-full" role="img" aria-label={title}>
           {[0, 0.25, 0.5, 0.75, 1].map((tick) => {
             const yy = y(tick);
             return (
@@ -353,13 +353,13 @@ function ScientificGainChart({ data }: { data: ScientificResult[] }) {
   const xStep = data.length ? plotWidth / data.length : plotWidth;
 
   return (
-    <div className="rounded-xl border border-white/10 bg-[#07111f] p-5">
-      <div className="mb-4">
+    <div className="min-w-0 rounded-xl border border-white/10 bg-[#07111f] p-4 sm:p-5">
+      <div className="mb-4 min-w-0">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">AI-QEC Absolute Gain</p>
         <p className="mt-1 text-xs text-slate-500">Absolute improvement in logical success over the baseline.</p>
       </div>
-      <div className="overflow-x-auto">
-        <svg viewBox={`0 0 ${width} ${height}`} className="h-auto min-w-[680px] w-full" role="img" aria-label="AI-QEC absolute gain by physical noise">
+      <div className="w-full min-w-0 overflow-hidden">
+        <svg viewBox={`0 0 ${width} ${height}`} className="block h-auto w-full max-w-full" role="img" aria-label="AI-QEC absolute gain by physical noise">
           {[0, 0.25, 0.5, 0.75, 1].map((tick) => {
             const yy = top + (1 - tick) * plotHeight;
             return (
@@ -2179,9 +2179,9 @@ export default function Home() {
             COMPARISON
         ================================================= */}
 
-        <section className="mt-6 rounded-2xl border border-white/10 bg-[#0b1b2d] p-6 shadow-xl">
+        <section className="mt-6 min-w-0 rounded-2xl border border-white/10 bg-[#0b1b2d] p-4 shadow-xl sm:p-6">
 
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div className="flex min-w-0 flex-col justify-between gap-4 md:flex-row md:items-center">
 
             <div>
 
@@ -2429,9 +2429,9 @@ export default function Home() {
             VISUALIZATION
         ================================================= */}
 
-        <section className="mt-6 rounded-2xl border border-white/10 bg-[#0b1b2d] p-6 shadow-xl">
+        <section className="mt-6 min-w-0 rounded-2xl border border-white/10 bg-[#0b1b2d] p-4 shadow-xl sm:p-6">
 
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div className="flex min-w-0 flex-col justify-between gap-4 md:flex-row md:items-center">
 
             <div>
 
@@ -2578,9 +2578,9 @@ export default function Home() {
             EXPERIMENT HISTORY
         ================================================= */}
 
-        <section className="mt-6 rounded-2xl border border-white/10 bg-[#0b1b2d] p-6 shadow-xl">
+        <section className="mt-6 min-w-0 rounded-2xl border border-white/10 bg-[#0b1b2d] p-4 shadow-xl sm:p-6">
 
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div className="flex min-w-0 flex-col justify-between gap-4 md:flex-row md:items-center">
 
             <div>
 
@@ -3411,11 +3411,11 @@ function LineChartCard({
       description={description}
     >
 
-      <div className="overflow-x-auto">
+      <div className="w-full min-w-0 overflow-hidden">
 
         <svg
           viewBox={`0 0 ${width} ${height}`}
-          className="h-auto min-w-[650px] w-full"
+          className="block h-auto w-full max-w-full"
           role="img"
           aria-label={title}
         >
@@ -3642,11 +3642,11 @@ function BarChartCard({
       description={description}
     >
 
-      <div className="overflow-x-auto">
+      <div className="w-full min-w-0 overflow-hidden">
 
         <svg
           viewBox={`0 0 ${width} ${height}`}
-          className="h-auto min-w-[650px] w-full"
+          className="block h-auto w-full max-w-full"
           role="img"
           aria-label={title}
         >
@@ -3808,9 +3808,9 @@ function ChartShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#07111f] p-5">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#07111f] p-4 sm:p-5">
 
-      <h3 className="text-lg font-semibold text-slate-200">
+      <h3 className="break-words text-lg font-semibold text-slate-200">
         {title}
       </h3>
 
@@ -3836,9 +3836,9 @@ function PerformanceTable({
   data: VisualizationData["performance"];
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#07111f] p-5">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#07111f] p-4 sm:p-5">
 
-      <h3 className="text-lg font-semibold text-slate-200">
+      <h3 className="break-words text-lg font-semibold text-slate-200">
         Performance Comparison
       </h3>
 
